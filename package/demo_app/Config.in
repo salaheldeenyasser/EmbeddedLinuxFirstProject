@@ -1,0 +1,8 @@
+config BR2_PACKAGE_DEMO_APP
+	bool "LED/Switch demo application"
+	depends on BR2_PACKAGE_LEDBLK
+	depends on BR2_PACKAGE_SWITCHBLK
+	help
+	  User-space demo application that reads data from
+	  switchblk character driver and writes it to
+	  ledblk character driver.

@@ -1,0 +1,7 @@
+config BR2_PACKAGE_LEDBLK
+	bool "ledblk character driver"
+	depends on BR2_LINUX_KERNEL
+	help
+	  LEDBLK is a RAM-backed character device driver
+	  with full file_operations support, procfs and sysfs
+	  interfaces.
