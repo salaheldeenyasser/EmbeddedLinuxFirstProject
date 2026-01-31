@@ -54,43 +54,51 @@ static ssize_t switchblk_read(struct file *filp, char __user *buf,
 			      size_t count, loff_t *ppos)
 {
 	struct switchblk_dev *dev = filp->private_data;
+	size_t available;
+	size_t to_copy;
 
 	if (*ppos >= dev->size)
 		return 0;
 
-	count = min(count, dev->size - *ppos);
+	available = dev->size - (size_t)*ppos;
+	to_copy = min(count, available);
 
 	mutex_lock(&dev->lock);
-	if (copy_to_user(buf, dev->buffer + *ppos, count)) {
+	if (copy_to_user(buf, dev->buffer + *ppos, to_copy)) {
 		mutex_unlock(&dev->lock);
 		return -EFAULT;
 	}
 	mutex_unlock(&dev->lock);
 
-	*ppos += count;
-	return count;
+	*ppos += to_copy;
+	return to_copy;
 }
+
 
 static ssize_t switchblk_write(struct file *filp, const char __user *buf,
 			       size_t count, loff_t *ppos)
 {
 	struct switchblk_dev *dev = filp->private_data;
+	size_t available;
+	size_t to_copy;
 
 	if (*ppos >= dev->size)
 		return -ENOSPC;
 
-	count = min(count, dev->size - *ppos);
+	available = dev->size - (size_t)*ppos;
+	to_copy = min(count, available);
 
 	mutex_lock(&dev->lock);
-	if (copy_from_user(dev->buffer + *ppos, buf, count)) {
+	if (copy_from_user(dev->buffer + *ppos, buf, to_copy)) {
 		mutex_unlock(&dev->lock);
 		return -EFAULT;
 	}
 	mutex_unlock(&dev->lock);
 
-	*ppos += count;
-	return count;
+	*ppos += to_copy;
+	return to_copy;
 }
+
 
 static loff_t switchblk_llseek(struct file *filp, loff_t off, int whence)
 {
@@ -253,5 +261,5 @@ module_init(switchblk_init);
 module_exit(switchblk_exit);
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("You");
+MODULE_AUTHOR("Salah Eldeen Yasser");
 MODULE_DESCRIPTION("Switch block character driver");

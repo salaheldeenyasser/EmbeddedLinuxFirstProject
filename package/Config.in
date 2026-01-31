@@ -2918,14 +2918,14 @@ endmenu
 
 menu "Custom kernel drivers"
 
-source "package/ledblk/Config.in"
-source "package/switchblk/Config.in"
+	source "package/ledblk/Config.in"
+	source "package/switchblk/Config.in"
 
 endmenu
 
 menu "Custom applications"
 
-source "package/demo_app/Config.in"
+	source "package/demo_app/Config.in"
 
 endmenu
 

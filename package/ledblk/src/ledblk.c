@@ -51,46 +51,46 @@ static int ledblk_release(struct inode *inode, struct file *filp)
 }
 
 static ssize_t ledblk_read(struct file *filp, char __user *buf,
-			   size_t count, loff_t *ppos)
+                           size_t count, loff_t *ppos)
 {
-	struct ledblk_dev *dev = filp->private_data;
-
-	if (*ppos >= dev->size)
-		return 0;
-
-	count = min(count, dev->size - *ppos);
-
-	mutex_lock(&dev->lock);
-	if (copy_to_user(buf, dev->buffer + *ppos, count)) {
-		mutex_unlock(&dev->lock);
-		return -EFAULT;
-	}
-	mutex_unlock(&dev->lock);
-
-	*ppos += count;
-	return count;
+        struct ledblk_dev *dev = filp->private_data;
+        size_t available;
+        size_t to_copy;
+  
+        if (*ppos >= dev->size)
+            return 0;
+  
+        available = dev->size - (size_t)*ppos;
+        to_copy = min(count, available);
+  
+        if (copy_to_user(buf, dev->buffer + *ppos, to_copy))
+            return -EFAULT;
+    
+        *ppos += to_copy;
+        return to_copy;
 }
+
 
 static ssize_t ledblk_write(struct file *filp, const char __user *buf,
-			    size_t count, loff_t *ppos)
+                            size_t count, loff_t *ppos)
 {
-	struct ledblk_dev *dev = filp->private_data;
-
-	if (*ppos >= dev->size)
-		return -ENOSPC;
-
-	count = min(count, dev->size - *ppos);
-
-	mutex_lock(&dev->lock);
-	if (copy_from_user(dev->buffer + *ppos, buf, count)) {
-		mutex_unlock(&dev->lock);
-		return -EFAULT;
-	}
-	mutex_unlock(&dev->lock);
-
-	*ppos += count;
-	return count;
+        struct ledblk_dev *dev = filp->private_data;
+        size_t available;
+        size_t to_copy;
+  
+        if (*ppos >= dev->size)
+            return -ENOSPC;
+    
+        available = dev->size - (size_t)*ppos;
+        to_copy = min(count, available);
+    
+        if (copy_from_user(dev->buffer + *ppos, buf, to_copy))
+            return -EFAULT;
+    
+        *ppos += to_copy;
+        return to_copy;
 }
+
 
 static loff_t ledblk_llseek(struct file *filp, loff_t off, int whence)
 {
@@ -254,5 +254,5 @@ module_init(ledblk_init);
 module_exit(ledblk_exit);
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("You");
+MODULE_AUTHOR("Salah Eldeen Yasser");
 MODULE_DESCRIPTION("LED block character driver");

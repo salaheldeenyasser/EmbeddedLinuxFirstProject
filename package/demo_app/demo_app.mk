@@ -5,7 +5,7 @@
 ################################################################################
 
 DEMO_APP_VERSION = 1.0
-DEMO_APP_SITE = $(BR2_EXTERNAL_MYPROJECT_PATH)/package/demo_app/src
+DEMO_APP_SITE = ~/buildroot/package/demo_app/src
 DEMO_APP_SITE_METHOD = local
 
 DEMO_APP_DEPENDENCIES = ledblk switchblk
